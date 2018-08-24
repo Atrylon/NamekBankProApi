@@ -68,7 +68,6 @@ class MastersController extends FOSRestController
      */
     public function putMasterAction(Request $request, int $id){
         if($this->getUser()){
-
             $master = $this->masterRepository->find($id);
             $firstname = $request->get('firstname');
             $lastname = $request->get('lastname');

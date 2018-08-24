@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CreditcardRepository")
@@ -10,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 class Creditcard
 {
     /**
+     * @Groups({"creditcard"})
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
@@ -17,22 +19,25 @@ class Creditcard
     private $id;
 
     /**
+     * @Groups({"creditcard"})
      * @ORM\Column(type="string", length=255)
      */
     private $name;
 
     /**
+     * @Groups({"creditcard"})
      * @ORM\Column(type="string", length=255)
      */
     private $creditCardType;
 
     /**
+     * @Groups({"creditcard"})
      * @ORM\Column(type="string", length=255)
      */
     private $creditCardNumber;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Company", inversedBy="creditcards")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Company", inversedBy="creditcards", cascade={"persist", "remove"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $company;

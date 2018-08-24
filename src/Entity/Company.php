@@ -58,9 +58,31 @@ class Company
 
     /**
      * @Groups("company")
-     * @ORM\OneToOne(targetEntity="App\Entity\Master", inversedBy="company", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="App\Entity\Master", inversedBy="company", cascade={"persist"})
      */
     private $master;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Creditcard", mappedBy="company", cascade={"remove"})
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $creditcards;
+
+    /**
+     * @return mixed
+     */
+    public function getCreditcards()
+    {
+        return $this->creditcards;
+    }
+
+    /**
+     * @param mixed $creditcards
+     */
+    public function setCreditcards($creditcards)
+    {
+        $this->creditcards = $creditcards;
+    }
 
     public function __construct()
     {

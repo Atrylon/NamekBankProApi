@@ -47,7 +47,7 @@ class Master implements UserInterface
 
     /**
      * @Groups("master")
-     * @ORM\OneToOne(targetEntity="App\Entity\Company", mappedBy="master", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="App\Entity\Company", mappedBy="master", cascade={"persist"})
      */
     private $company;
 
