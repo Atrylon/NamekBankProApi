@@ -1,0 +1,14 @@
+#index:
+#    path: /
+#    controller: App\Controller\DefaultController::index
+masters:
+    type: rest
+    resource: App\Controller\MastersController
+
+companies:
+    type: rest
+    resource: App\Controller\CompaniesController
+
+creditcards:
+    type: rest
+    resource: App\Controller\CreditcardsController
