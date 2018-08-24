@@ -33,8 +33,14 @@ class MastersController extends FOSRestController
      * @Rest\View(serializerGroups={"master"})
      */
     function getMastersAction(){
-        $masters = $this->masterRepository->findAll();
-        return $this->view($masters);
+        if($this->getUser()) {
+            if (in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
+                $masters = $this->masterRepository->findAll();
+                return $this->view($masters);
+            }
+            return $this->view('Vous n\'avez pas les droits', 403);
+        }
+        return $this->view('Non logué', 401);
     }
 
     /**
@@ -61,25 +67,30 @@ class MastersController extends FOSRestController
      * @Rest\View(serializerGroups={"master"})
      */
     public function putMasterAction(Request $request, int $id){
-        $master = $this->masterRepository->find($id);
-        $firstname = $request->get('firstname');
-        $lastname = $request->get('lastname');
-        $email = $request->get('email');
+        if($this->getUser()){
 
-        if ($this->getUser() === $master or in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
-            if (isset($firstname)) {
-                $master->setFirstname($firstname);
+            $master = $this->masterRepository->find($id);
+            $firstname = $request->get('firstname');
+            $lastname = $request->get('lastname');
+            $email = $request->get('email');
+
+            if ($this->getUser() === $master or in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
+                if (isset($firstname)) {
+                    $master->setFirstname($firstname);
+                }
+                if (isset($lastname)) {
+                    $master->setLastname($lastname);
+                }
+                if (isset($email)) {
+                    $master->setEmail($email);
+                }
+                $this->em->persist($master);
+                $this->em->flush();
+                return $this->view($master);
             }
-            if (isset($lastname)) {
-                $master->setLastname($lastname);
-            }
-            if (isset($email)) {
-                $master->setEmail($email);
-            }
-            $this->em->persist($master);
-            $this->em->flush();
+            return $this->view('Vous n\'avez pas les droits', 403);
         }
-        return $this->view($master);
+        return $this->view('Non loggué', 403);
     }
 
     /**
@@ -88,17 +99,24 @@ class MastersController extends FOSRestController
      */
     public function deleteMasterAction($id)
     {
-        $master = $this->masterRepository->find($id);
+        if($this->getUser()){
 
-        if ($this->getUser() === $master or in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
+            $master = $this->masterRepository->find($id);
 
-            $company = $master->getCompany();
-            if ($company) {
-                $company->setMaster(null);
+            if ($this->getUser() === $master or in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
+
+                $company = $master->getCompany();
+                if ($company) {
+                    $company->setMaster(null);
+                }
+                $this->em->remove($master);
+                $this->em->flush();
+                return $this->view('Deleted!', 204);
+
             }
-            $this->em->remove($master);
-            $this->em->flush();
+            return $this->view('Vous n\'avez pas les droits', 403);
         }
+        return $this->view('Non loggué', 403);
     }
 
 }

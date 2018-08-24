@@ -14,7 +14,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class Master implements UserInterface
 {
     /**
-     * @Groups("master")
+     * @Groups({"master", "company"})
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
@@ -22,13 +22,13 @@ class Master implements UserInterface
     private $id;
 
     /**
-     * @Groups("master")
+     * @Groups({"master", "company"})
      * @ORM\Column(type="string", length=255)
      */
     private $firstname;
 
     /**
-     * @Groups("master")
+     * @Groups({"master", "company"})
      * @ORM\Column(type="string", length=255)
      */
     private $lastname;
