@@ -3,9 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CompanyRepository")
@@ -13,7 +13,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class Company
 {
     /**
-     * @Groups({"company", "master"})
+     * @Groups({"company", "master", "creditcard"})
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
@@ -21,36 +21,47 @@ class Company
     private $id;
 
     /**
-     * @Groups({"company", "master"})
+     * @Assert\NotBlank()
+     * @Assert\Length(min="3")
+     * @Groups({"company", "master", "creditcard"})
      * @ORM\Column(type="string", length=255)
      */
     private $name;
 
     /**
+     * @Assert\NotBlank()
+     * @Assert\Length(min="3")
      * @Groups("company")
      * @ORM\Column(type="string", length=255)
      */
     private $slogan;
 
     /**
+     * @Assert\NotBlank()
+     * @Assert\Length(min = 8, max = 20, minMessage = "min_lenght", maxMessage = "max_lenght")
+     * @Assert\Regex(pattern="/^\(0\)[0-9]*$", message="number_only")
      * @Groups("company")
      * @ORM\Column(type="string", length=255)
      */
     private $phoneNumber;
 
     /**
+     * @Assert\NotBlank()
+     * @Assert\Length(min="3")
      * @Groups("company")
      * @ORM\Column(type="string", length=255)
      */
     private $address;
 
     /**
+     * @Assert\Url()
      * @Groups("company")
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $webSiteUrl;
 
     /**
+     * @Assert\Url()
      * @Groups("company")
      * @ORM\Column(type="string", length=255, nullable=true)
      */
@@ -63,8 +74,7 @@ class Company
     private $master;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Creditcard", mappedBy="company", cascade={"remove"})
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\OneToMany(targetEntity="App\Entity\Creditcard", mappedBy="company", cascade={"persist", "remove"})
      */
     private $creditcards;
 

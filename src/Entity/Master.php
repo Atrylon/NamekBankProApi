@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @UniqueEntity("email")
@@ -22,24 +23,31 @@ class Master implements UserInterface
     private $id;
 
     /**
-     * @Groups({"master", "company"})
+     * @Assert\NotBlank()
+     * @Assert\Length(min="3")
+     * @Groups({"master"})
      * @ORM\Column(type="string", length=255)
      */
     private $firstname;
 
     /**
-     * @Groups({"master", "company"})
+     * @Assert\NotBlank()
+     * @Assert\Length(min="3")
+     * @Groups({"master"})
      * @ORM\Column(type="string", length=255)
      */
     private $lastname;
 
     /**
-     * @Groups("master",)
+     * @Assert\Email()
+     * @Groups({"master", "company"})
      * @ORM\Column(type="string", length=255)
      */
     private $email;
 
     /**
+     * @Assert\NotBlank()
+     * @Assert\Length(min="10")
      * @Groups("master")
      * @ORM\Column(type="string", length=255)
      */
@@ -48,6 +56,7 @@ class Master implements UserInterface
     /**
      * @Groups("master")
      * @ORM\OneToOne(targetEntity="App\Entity\Company", mappedBy="master", cascade={"persist"})
+     *
      */
     private $company;
 

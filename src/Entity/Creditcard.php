@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CreditcardRepository")
@@ -19,25 +20,33 @@ class Creditcard
     private $id;
 
     /**
+     * @Assert\NotBlank()
+     * @Assert\Length(min="3")
      * @Groups({"creditcard"})
      * @ORM\Column(type="string", length=255)
      */
     private $name;
 
     /**
+     * @Assert\NotBlank()
+     * @Assert\Length(min="3")
      * @Groups({"creditcard"})
      * @ORM\Column(type="string", length=255)
      */
     private $creditCardType;
 
     /**
+     * @Assert\NotBlank()
+     * @Assert\Length(min="3")
      * @Groups({"creditcard"})
      * @ORM\Column(type="string", length=255)
      */
     private $creditCardNumber;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Company", inversedBy="creditcards", cascade={"persist", "remove"})
+     * @Assert\NotBlank()
+     * @Groups({"creditcard"})
+     * @ORM\ManyToOne(targetEntity="App\Entity\Company", inversedBy="creditcards")
      * @ORM\JoinColumn(nullable=false)
      */
     private $company;

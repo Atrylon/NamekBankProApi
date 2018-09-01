@@ -4,11 +4,19 @@
 masters:
     type: rest
     resource: App\Controller\MastersController
+    prefix: /api
 
 companies:
     type: rest
     resource: App\Controller\CompaniesController
+    prefix: /api
 
 creditcards:
     type: rest
     resource: App\Controller\CreditcardsController
+    prefix: /api
+
+app.swagger_ui:
+    path: api/doc
+    methods: GET
+    defaults: { _controller: nelmio_api_doc.controller.swagger_ui}

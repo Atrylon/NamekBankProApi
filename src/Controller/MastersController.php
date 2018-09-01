@@ -14,6 +14,7 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
+use Swagger\Annotations as SWG;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
@@ -29,8 +30,14 @@ class MastersController extends FOSRestController
         $this->em = $em;
     }
 
+    // List all Masters
     /**
      * @Rest\View(serializerGroups={"master"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the masters list"
+     * )
+     * @SWG\Tag(name="master")
      */
     function getMastersAction(){
         if($this->getUser()) {
@@ -43,18 +50,30 @@ class MastersController extends FOSRestController
         return $this->view('Non logué', 401);
     }
 
+    //List One master based on Id
     /**
      * @Rest\View(serializerGroups={"master"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the master based on his Id"
+     * )
+     * @SWG\Tag(name="master")
      */
     public function getMasterAction ($id){
         $master = $this->masterRepository->find($id);
         return $this->view($master);
     }
 
+    //Create One master from json file
     /**
      * @Rest\Post("/masters")
      * @ParamConverter("master", converter="fos_rest.request_body")
      * @Rest\View(serializerGroups={"master"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Create a master from a json file"
+     * )
+     * @SWG\Tag(name="master")
      */
     public function postMastersAction(Master $master){
         $this->em->persist($master);
@@ -62,9 +81,15 @@ class MastersController extends FOSRestController
         return $this->view($master);
     }
 
+    //Modify One master from json file based on Id
     /**
      * @param $id
      * @Rest\View(serializerGroups={"master"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Modify the master data based on his Id"
+     * )
+     * @SWG\Tag(name="master")
      */
     public function putMasterAction(Request $request, int $id){
         if($this->getUser()){
@@ -92,9 +117,15 @@ class MastersController extends FOSRestController
         return $this->view('Non loggué', 403);
     }
 
+    //Delete one master based on Id
     /**
      * @param $id
      * @Rest\View(serializerGroups={"master"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Delete the master based on his Id"
+     * )
+     * @SWG\Tag(name="master")
      */
     public function deleteMasterAction($id)
     {

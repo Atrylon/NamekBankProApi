@@ -16,6 +16,8 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use FOS\RestBundle\Controller\FOSRestController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
+use Swagger\Annotations as SWG;
+
 
 class CompaniesController extends FOSRestController
 {
@@ -28,8 +30,14 @@ class CompaniesController extends FOSRestController
         $this->em = $em;
     }
 
+    //List all companies
     /**
      * @Rest\View(serializerGroups={"company"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the companies list"
+     * )
+     * @SWG\Tag(name="company")
      */
     public function getCompaniesAction(){
         if($this->getUser()){
@@ -42,18 +50,30 @@ class CompaniesController extends FOSRestController
         return $this->view('Non logué', 401);
     }
 
+    //List one company based on Id
     /**
      * @Rest\View(serializerGroups={"company"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the company based on his Id"
+     * )
+     * @SWG\Tag(name="company")
      */
     public function getCompanyAction($id){
         $company = $this->companyRepository->find($id);
         return $this->view($company);
     }
 
+    //Create a company form a json file
     /**
      * @Rest\Post("/companies")
      * @ParamConverter("company", converter="fos_rest.request_body")
      * @Rest\View(serializerGroups={"company"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Create a company from a json file"
+     * )
+     * @SWG\Tag(name="company")
      */
     public function postCompaniesAction(Company $company){
         if($this->getUser()){
@@ -64,12 +84,17 @@ class CompaniesController extends FOSRestController
         return $this->view($company);
     }
 
+    //Modify a company from json file based on id
     /**
      * @Rest\View(serializerGroups={"company"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Modify the company data based on his Id"
+     * )
+     * @SWG\Tag(name="company")
      */
     public function putCompanyAction(Request $request, $id){
         if($this->getUser()){
-
             $company = $this->companyRepository->find($id);
 
             $name = $request->get('name');
@@ -108,15 +133,21 @@ class CompaniesController extends FOSRestController
 
     }
 
+    //Delete one company based on Id
     /**
      * @Rest\View(serializerGroups={"company"})
+     * @SWG\Response(
+     *     response=200,
+     *     description="Delete the company based on his Id"
+     * )
+     * @SWG\Tag(name="company")
      */
     public function deleteCompanyAction($id){
         if($this->getUser()){
 
             $company = $this->companyRepository->find($id);
 
-            if ($this->getUser() === $this->getUser() or in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
+            if ($this->getUser() === $company->getMaster() or in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
 
                 $this->em->remove($company);
                 $this->em->flush();
