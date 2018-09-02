@@ -17,6 +17,9 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Swagger\Annotations as SWG;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 
 class CreditcardsController extends FOSRestController
@@ -24,13 +27,15 @@ class CreditcardsController extends FOSRestController
     private $creditcardRepository;
     private $companyRepository;
     private $em;
+    private $validationErrors;
 
     public function __construct(CreditcardRepository $creditcardRepository, CompanyRepository $companyRepository,
-                                EntityManagerInterface $em)
+                                EntityManagerInterface $em, ConstraintViolationListInterface $validationErrors)
     {
         $this->companyRepository = $companyRepository;
         $this->creditcardRepository = $creditcardRepository;
         $this->em = $em;
+        $this->validationErrors = $validationErrors;
     }
 
     //List all Creditcards
@@ -93,13 +98,24 @@ class CreditcardsController extends FOSRestController
      * )
      * @SWG\Tag(name="creditcard")
      */
-    public function postCreditcardsAction(Creditcard $creditcard){
+    public function postCreditcardsAction(Creditcard $creditcard, ConstraintViolationListInterface $validationErrors){
         if($this->getUser()){
-            $master = $this->getUser();
-            $creditcard->setCompany($master->getCompany());
-            $this->em->persist($creditcard);
-            $this->em->flush();
-            return $this->view($creditcard);
+            if ($validationErrors->count() > 0) {
+                $error = [];
+                /** @var  ConstraintViolation $constraintViolation */
+                foreach ($validationErrors as $constraintViolation) {
+                    $message = $constraintViolation->getMessage();
+                    $propertyPath = $constraintViolation->getPropertyPath();
+                    array_push($error, $message, $propertyPath);
+                }
+                return json_encode($error);
+            } else {
+                $master = $this->getUser();
+                $creditcard->setCompany($master->getCompany());
+                $this->em->persist($creditcard);
+                $this->em->flush();
+                return $this->view($creditcard);
+            }
         }
         return $this->view('Non logué', 401);
     }
@@ -114,7 +130,7 @@ class CreditcardsController extends FOSRestController
      * )
      * @SWG\Tag(name="creditcard")
      */
-    public function putCreditcardAction(Request $request, $id){
+    public function putCreditcardAction(Request $request, $id, ValidatorInterface $validator){
         if($this->getUser()){
             $creditcard = $this->creditcardRepository->find($id);
             $name = $request->get('name');
@@ -131,7 +147,18 @@ class CreditcardsController extends FOSRestController
                 if (isset($creditcardType)) {
                     $creditcard->setCreditCardType($creditcardType);
                 }
+
+                $validationErrors = $validator->validate($creditcard);
                 $this->em->persist($creditcard);
+                $error = [];
+                foreach ($validationErrors as $constraintViolation) {
+                    $message = $constraintViolation->getMessage();
+                    $propertyPath = $constraintViolation->getPropertyPath();
+                    array_push($error, $message, $propertyPath);
+                }
+                if (sizeof($error) > 0) {
+                    return json_encode($error);
+                }
                 $this->em->flush();
                 return $this->view($creditcard);
             }

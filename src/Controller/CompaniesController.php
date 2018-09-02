@@ -17,17 +17,23 @@ use FOS\RestBundle\Controller\FOSRestController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
 use Swagger\Annotations as SWG;
+use Symfony\Component\Validator\ConstraintViolation;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 
 class CompaniesController extends FOSRestController
 {
     private $companyRepository;
     private $em;
+    private $validationErrors;
 
-    public function __construct(CompanyRepository $companyRepository, EntityManagerInterface $em)
+    public function __construct(CompanyRepository $companyRepository, EntityManagerInterface $em,
+ConstraintViolationListInterface $validationErrors)
     {
         $this->companyRepository = $companyRepository;
         $this->em = $em;
+        $this->validationErrors = $validationErrors;
     }
 
     //List all companies
@@ -75,13 +81,25 @@ class CompaniesController extends FOSRestController
      * )
      * @SWG\Tag(name="company")
      */
-    public function postCompaniesAction(Company $company){
+    public function postCompaniesAction(Company $company, ConstraintViolationListInterface $validationErrors){
         if($this->getUser()){
             $company->setMaster($this->getUser());
         }
-        $this->em->persist($company);
-        $this->em->flush();
-        return $this->view($company);
+        if ($validationErrors->count() > 0) {
+            $error = [];
+            /** @var  ConstraintViolation $constraintViolation */
+            foreach ($validationErrors as $constraintViolation) {
+                $message = $constraintViolation->getMessage();
+                $propertyPath = $constraintViolation->getPropertyPath();
+                array_push($error, $message, $propertyPath);
+            }
+            return json_encode($error);
+        } else {
+            $this->em->persist($company);
+            $this->em->flush();
+            return $this->view($company);
+        }
+
     }
 
     //Modify a company from json file based on id
@@ -93,7 +111,7 @@ class CompaniesController extends FOSRestController
      * )
      * @SWG\Tag(name="company")
      */
-    public function putCompanyAction(Request $request, $id){
+    public function putCompanyAction(Request $request, $id, ValidatorInterface $validator){
         if($this->getUser()){
             $company = $this->companyRepository->find($id);
 
@@ -123,7 +141,18 @@ class CompaniesController extends FOSRestController
                 if (isset($pictureUrl)) {
                     $company->setPictureUrl($pictureUrl);
                 }
+
+                $validationErrors = $validator->validate($company);
                 $this->em->persist($company);
+                $error = [];
+                foreach ($validationErrors as $constraintViolation) {
+                    $message = $constraintViolation->getMessage();
+                    $propertyPath = $constraintViolation->getPropertyPath();
+                    array_push($error, $message, $propertyPath);
+                }
+                if (sizeof($error) > 0) {
+                    return json_encode($error);
+                }
                 $this->em->flush();
                 return $this->view($company);
             }

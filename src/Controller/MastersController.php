@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Swagger\Annotations as SWG;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class MastersController extends FOSRestController
 {
@@ -24,10 +25,12 @@ class MastersController extends FOSRestController
     private $em;
     private $validationErrors;
 
-    public function __construct(MasterRepository $masterRepository, EntityManagerInterface $em)
+    public function __construct(MasterRepository $masterRepository, EntityManagerInterface $em,
+ConstraintViolationListInterface $validationErrors)
     {
         $this->masterRepository = $masterRepository;
         $this->em = $em;
+        $this->validationErrors = $validationErrors;
     }
 
     // List all Masters
@@ -75,10 +78,24 @@ class MastersController extends FOSRestController
      * )
      * @SWG\Tag(name="master")
      */
-    public function postMastersAction(Master $master){
-        $this->em->persist($master);
-        $this->em->flush();
-        return $this->view($master);
+    public function postMastersAction(Master $master, ConstraintViolationListInterface $validationErrors){
+        if ($validationErrors->count() > 0 ){
+            $error = [];
+            /** @var  ConstraintViolation $constraintViolation */
+            foreach ($validationErrors as $constraintViolation) {
+                $message = $constraintViolation->getMessage();
+                $propertyPath = $constraintViolation->getPropertyPath();
+                array_push($error, $message, $propertyPath);
+
+            }
+            return json_encode($error);
+
+        }
+        else{
+            $this->em->persist($master);
+            $this->em->flush();
+            return $this->view($master);
+        }
     }
 
     //Modify One master from json file based on Id
@@ -91,7 +108,7 @@ class MastersController extends FOSRestController
      * )
      * @SWG\Tag(name="master")
      */
-    public function putMasterAction(Request $request, int $id){
+    public function putMasterAction(Request $request, int $id, ValidatorInterface $validator){
         if($this->getUser()){
             $master = $this->masterRepository->find($id);
             $firstname = $request->get('firstname');
@@ -108,7 +125,17 @@ class MastersController extends FOSRestController
                 if (isset($email)) {
                     $master->setEmail($email);
                 }
+                $validationErrors = $validator->validate($master);
                 $this->em->persist($master);
+                $error = [];
+                foreach ($validationErrors as $constraintViolation) {
+                    $message = $constraintViolation->getMessage();
+                    $propertyPath = $constraintViolation->getPropertyPath();
+                    array_push($error, $message, $propertyPath);
+                }
+                if (sizeof($error) > 0) {
+                    return json_encode($error);
+                }
                 $this->em->flush();
                 return $this->view($master);
             }
