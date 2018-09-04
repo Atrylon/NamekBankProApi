@@ -28,12 +28,10 @@ class CompaniesController extends FOSRestController
     private $em;
     private $validationErrors;
 
-    public function __construct(CompanyRepository $companyRepository, EntityManagerInterface $em,
-ConstraintViolationListInterface $validationErrors)
+    public function __construct(CompanyRepository $companyRepository, EntityManagerInterface $em)
     {
         $this->companyRepository = $companyRepository;
         $this->em = $em;
-        $this->validationErrors = $validationErrors;
     }
 
     //List all companies
@@ -49,7 +47,7 @@ ConstraintViolationListInterface $validationErrors)
         if($this->getUser()){
             if (in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
                 $companies = $this->companyRepository->findAll();
-                return $this->view($companies);
+                return $this->view($companies, 200);
             }
             return $this->view('Vous n\'avez pas les droits', 403);
         }
@@ -61,13 +59,13 @@ ConstraintViolationListInterface $validationErrors)
      * @Rest\View(serializerGroups={"company"})
      * @SWG\Response(
      *     response=200,
-     *     description="Returns the company based on his Id"
+     *     description="Returns the company based on it Id"
      * )
      * @SWG\Tag(name="company")
      */
     public function getCompanyAction($id){
         $company = $this->companyRepository->find($id);
-        return $this->view($company);
+        return $this->view($company, 200);
     }
 
     //Create a company form a json file
@@ -97,7 +95,7 @@ ConstraintViolationListInterface $validationErrors)
         } else {
             $this->em->persist($company);
             $this->em->flush();
-            return $this->view($company);
+            return $this->view($company, 201);
         }
 
     }
@@ -107,7 +105,7 @@ ConstraintViolationListInterface $validationErrors)
      * @Rest\View(serializerGroups={"company"})
      * @SWG\Response(
      *     response=200,
-     *     description="Modify the company data based on his Id"
+     *     description="Modify the company data based on it Id"
      * )
      * @SWG\Tag(name="company")
      */
@@ -154,7 +152,7 @@ ConstraintViolationListInterface $validationErrors)
                     return json_encode($error);
                 }
                 $this->em->flush();
-                return $this->view($company);
+                return $this->view($company, 200);
             }
             return $this->view('Vous n\'avez pas les droits', 403);
         }
@@ -167,7 +165,7 @@ ConstraintViolationListInterface $validationErrors)
      * @Rest\View(serializerGroups={"company"})
      * @SWG\Response(
      *     response=200,
-     *     description="Delete the company based on his Id"
+     *     description="Delete the company based on it Id"
      * )
      * @SWG\Tag(name="company")
      */
@@ -184,6 +182,6 @@ ConstraintViolationListInterface $validationErrors)
             }
             return $this->view('Vous n\'avez pas les droits', 403);
         }
-        return $this->view('Non loggué', 403);
+        return $this->view('Non loggué', 401);
     }
 }

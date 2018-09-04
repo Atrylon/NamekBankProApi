@@ -30,12 +30,11 @@ class CreditcardsController extends FOSRestController
     private $validationErrors;
 
     public function __construct(CreditcardRepository $creditcardRepository, CompanyRepository $companyRepository,
-                                EntityManagerInterface $em, ConstraintViolationListInterface $validationErrors)
+                                EntityManagerInterface $em)
     {
         $this->companyRepository = $companyRepository;
         $this->creditcardRepository = $creditcardRepository;
         $this->em = $em;
-        $this->validationErrors = $validationErrors;
     }
 
     //List all Creditcards
@@ -51,7 +50,7 @@ class CreditcardsController extends FOSRestController
         if($this->getUser()){
             if (in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
                 $creditcards = $this->creditcardRepository->findAll();
-                return $this->view($creditcards);
+                return $this->view($creditcards, 200);
             }
             return $this->view('Vous n\'avez pas les droits', 403);
         }
@@ -69,7 +68,7 @@ class CreditcardsController extends FOSRestController
      */
     public function getCreditcardAction($id){
         $creditcard = $this->creditcardRepository->find($id);
-        return $this->view($creditcard);
+        return $this->view($creditcard, 200);
     }
 
     /**
@@ -83,7 +82,7 @@ class CreditcardsController extends FOSRestController
     public function getCompanyCreditcardsAction(int $id){
         $company = $this->companyRepository->find($id);
         $creditcard = $company->getCreditcards();
-        return $this->view($creditcard);
+        return $this->view($creditcard, 200);
     }
 
 
@@ -114,7 +113,7 @@ class CreditcardsController extends FOSRestController
                 $creditcard->setCompany($master->getCompany());
                 $this->em->persist($creditcard);
                 $this->em->flush();
-                return $this->view($creditcard);
+                return $this->view($creditcard, 201);
             }
         }
         return $this->view('Non logué', 401);
@@ -126,7 +125,7 @@ class CreditcardsController extends FOSRestController
      * @Rest\View(serializerGroups={"creditcard"})
      * @SWG\Response(
      *     response=200,
-     *     description="Modify the creditcard data based on his Id"
+     *     description="Modify the creditcard data based on it Id"
      * )
      * @SWG\Tag(name="creditcard")
      */
@@ -160,7 +159,7 @@ class CreditcardsController extends FOSRestController
                     return json_encode($error);
                 }
                 $this->em->flush();
-                return $this->view($creditcard);
+                return $this->view($creditcard, 200);
             }
             return $this->view('Vous n\'avez pas les droits', 403);
         }
@@ -173,7 +172,7 @@ class CreditcardsController extends FOSRestController
      * @Rest\View(serializerGroups={"creditcard"})
      * @SWG\Response(
      *     response=200,
-     *     description="Delete the creditcard based on his Id"
+     *     description="Delete the creditcard based on it Id"
      * )
      * @SWG\Tag(name="creditcard")
      */

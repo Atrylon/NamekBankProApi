@@ -25,12 +25,10 @@ class MastersController extends FOSRestController
     private $em;
     private $validationErrors;
 
-    public function __construct(MasterRepository $masterRepository, EntityManagerInterface $em,
-ConstraintViolationListInterface $validationErrors)
+    public function __construct(MasterRepository $masterRepository, EntityManagerInterface $em)
     {
         $this->masterRepository = $masterRepository;
         $this->em = $em;
-        $this->validationErrors = $validationErrors;
     }
 
     // List all Masters
@@ -46,7 +44,7 @@ ConstraintViolationListInterface $validationErrors)
         if($this->getUser()) {
             if (in_array('ROLE_ADMIN', $this->getUser()->getRoles())) {
                 $masters = $this->masterRepository->findAll();
-                return $this->view($masters);
+                return $this->view($masters, 200);
             }
             return $this->view('Vous n\'avez pas les droits', 403);
         }
@@ -64,7 +62,7 @@ ConstraintViolationListInterface $validationErrors)
      */
     public function getMasterAction ($id){
         $master = $this->masterRepository->find($id);
-        return $this->view($master);
+        return $this->view($master, 200);
     }
 
     //Create One master from json file
@@ -94,7 +92,7 @@ ConstraintViolationListInterface $validationErrors)
         else{
             $this->em->persist($master);
             $this->em->flush();
-            return $this->view($master);
+            return $this->view($master, 201);
         }
     }
 
@@ -137,11 +135,11 @@ ConstraintViolationListInterface $validationErrors)
                     return json_encode($error);
                 }
                 $this->em->flush();
-                return $this->view($master);
+                return $this->view($master, 200);
             }
             return $this->view('Vous n\'avez pas les droits', 403);
         }
-        return $this->view('Non loggué', 403);
+        return $this->view('Non loggué', 401);
     }
 
     //Delete one master based on Id
@@ -168,12 +166,12 @@ ConstraintViolationListInterface $validationErrors)
                 }
                 $this->em->remove($master);
                 $this->em->flush();
-                return $this->view('Deleted!', 204);
+                return $this->view('Deleted!', 200);
 
             }
             return $this->view('Vous n\'avez pas les droits', 403);
         }
-        return $this->view('Non loggué', 403);
+        return $this->view('Non loggué', 401);
     }
 
 }
