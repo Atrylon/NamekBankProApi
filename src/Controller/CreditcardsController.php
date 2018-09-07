@@ -99,6 +99,9 @@ class CreditcardsController extends FOSRestController
      */
     public function postCreditcardsAction(Creditcard $creditcard, ConstraintViolationListInterface $validationErrors){
         if($this->getUser()){
+            $master = $this->getUser();
+            $creditcard->setCompany($master->getCompany());
+
             if ($validationErrors->count() > 0) {
                 $error = [];
                 /** @var  ConstraintViolation $constraintViolation */
@@ -109,8 +112,6 @@ class CreditcardsController extends FOSRestController
                 }
                 return json_encode($error);
             } else {
-                $master = $this->getUser();
-                $creditcard->setCompany($master->getCompany());
                 $this->em->persist($creditcard);
                 $this->em->flush();
                 return $this->view($creditcard, 201);

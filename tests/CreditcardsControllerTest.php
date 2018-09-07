@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: beren
- * Date: 04/09/2018
- * Time: 18:56
+ * Date: 07/09/2018
+ * Time: 18:48
  */
 
 namespace App\Tests;
@@ -11,13 +11,14 @@ namespace App\Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class MastersControllerTest extends WebTestCase
+class CreditcardsControllerTest extends WebTestCase
 {
-    public function testAdminGetMastersAll(){
+
+    public function testAdminGetCreditcardsAll(){
         $client = static::createClient();
         $client->request(
             'GET',
-            '/api/masters',
+            '/api/creditcards',
             [],
             [],
             [
@@ -32,15 +33,13 @@ class MastersControllerTest extends WebTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertJson($content);
 
-        $arrayContent = json_decode($content, true);
-        $this->assertCount(10, $arrayContent);
     }
 
-    public function testUserGetMastersAll(){
+    public function testUserGetCreditcardsAll(){
         $client = static::createClient();
         $client->request(
             'GET',
-            '/api/masters',
+            '/api/creditcards',
             [],
             [],
             [
@@ -59,9 +58,9 @@ class MastersControllerTest extends WebTestCase
 
     }
 
-    public function testAnonymousGetMastersAll(){
+    public function testAnonymousGetCreditcardsAll(){
         $client = static::createClient();
-        $client->request('GET','/api/masters');
+        $client->request('GET','/api/creditcards');
 
         $response = $client->getResponse();
         $content =$response->getContent();
@@ -73,11 +72,11 @@ class MastersControllerTest extends WebTestCase
 
     }
 
-    public function testAdminGetMastersOne(){
+    public function testAdminGetCreditcardsOne(){
         $client = static::createClient();
         $client->request(
             'GET',
-            '/api/masters/1',
+            '/api/creditcards/1',
             [],
             [],
             [
@@ -96,11 +95,11 @@ class MastersControllerTest extends WebTestCase
 
     }
 
-    public function testUserGetMastersOne(){
+    public function testUserGetCreditcardsOne(){
         $client = static::createClient();
         $client->request(
             'GET',
-            '/api/masters/1',
+            '/api/creditcards/1',
             [],
             [],
             [
@@ -119,9 +118,9 @@ class MastersControllerTest extends WebTestCase
 
     }
 
-    public function testAnonymousGetMastersOne(){
+    public function testAnonymousGetCreditcardsOne(){
         $client = static::createClient();
-        $client->request('GET','/api/masters/1');
+        $client->request('GET','/api/creditcards/1');
 
         $response = $client->getResponse();
         $content =$response->getContent();
@@ -133,17 +132,21 @@ class MastersControllerTest extends WebTestCase
 
     }
 
-    public function testAdminPostMasters(){
+    public function testAdminPostCreditcards(){
         $data = [
-            "firstname" => "Baptiste",
-            "lastname"=> "Luluberlu",
-            "email"=> "baptiste.luluberlu@msn.com"
+            "name" => "My creditcard 11",
+            "creditCardType"=> "Visa",
+            "creditCardNumber"=> "1111111111111111",
+            "company"=> [
+                "id"=>1,
+                "name"=> "Adams-Reichel"
+            ]
         ];
 
         $client = static::createClient();
         $client->request(
             'POST',
-            '/api/masters',
+            '/api/creditcards.json',
             [],
             [],
             [
@@ -163,17 +166,18 @@ class MastersControllerTest extends WebTestCase
 
     }
 
-    public function testUserPostMasters(){
+    public function testUserPostCreditcards(){
         $data = [
-            "firstname" => "Roger",
-            "lastname"=> "Letavernier",
-            "email"=> "roger@gmail.com"
+            "name" => "My creditcard 12",
+            "creditCardType"=> "Visa Retired",
+            "creditCardNumber"=> "22222222222222",
+            "company"=> ["id"=>1]
         ];
 
         $client = static::createClient();
         $client->request(
             'POST',
-            '/api/masters',
+            '/api/creditcards',
             [],
             [],
             [
@@ -192,17 +196,18 @@ class MastersControllerTest extends WebTestCase
         $arrayContent = json_decode($content, true);
     }
 
-    public function testAnonymousPostMasters(){
+    public function testAnonymousPostCreditcards(){
         $data = [
-            "firstname" => "Jean-Claude",
-            "lastname"=> "Duchemin",
-            "email" => "JC.duchemin@muller.org"
+            "name" => "My creditcard 13",
+            "creditCardType"=> "MasterCard",
+            "creditCardNumber"=> "3333333333333333",
+            "company"=> ["id"=>1]
         ];
 
         $client = static::createClient();
         $client->request(
             'POST',
-            '/api/masters',
+            '/api/creditcards',
             [],
             [],
             [
@@ -220,7 +225,7 @@ class MastersControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request(
             'GET',
-            '/api/masters',
+            '/api/creditcards',
             [],
             [],
             [
@@ -239,15 +244,15 @@ class MastersControllerTest extends WebTestCase
         $this->assertCount(13, $arrayContent);
     }
 
-    public function testAdminPutMasters(){
+    public function testAdminPutCreditcards(){
         $data = [
-            "firstname" => "Testu"
+            "name" => "Put Company 1"
         ];
 
         $client = static::createClient();
         $client->request(
             'PUT',
-            '/api/masters/2',
+            '/api/creditcards/2',
             [],
             [],
             [
@@ -267,11 +272,11 @@ class MastersControllerTest extends WebTestCase
 
     }
 
-    public function testAdminDeleteMasters(){
+    public function testAdminDeleteCreditcards(){
         $client = static::createClient();
         $client->request(
             'DELETE',
-            '/api/masters/11',
+            '/api/creditcards/11',
             [],
             [],
             [
@@ -283,17 +288,18 @@ class MastersControllerTest extends WebTestCase
         $response = $client->getResponse();
         $content =$response->getContent();
 
-		//Bug du test lors du renvoi de code 204 ==> envoi 200
+        //Bug du test lors du renvoi de code 204 ==> envoi 200
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertJson($content);
     }
 
-    public function testUserDeleteAnotherMasters()
+    public function testUserDeleteAnotherCreditcards()
     {
+        //Test to delete another company
         $client = static::createClient();
         $client->request(
             'DELETE',
-            '/api/masters/12',
+            '/api/creditcards/5',
             [],
             [],
             [
@@ -309,32 +315,33 @@ class MastersControllerTest extends WebTestCase
         $this->assertJson($content);
     }
 
-    public function testUserDeletehisMasters()
-    {
+
+    public function testUserDeleteHisCreditcards(){
+        //Test to delete his company
         $client = static::createClient();
         $client->request(
             'DELETE',
-            '/api/masters/3',
+            '/api/creditcards/1',
             [],
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTH-TOKEN' => '5b7fd37c29d9f1.52475123',
+                'HTTP_AUTH-TOKEN' => '5b7fd37c29d9f1.52897532',
             ]
         );
 
         $response = $client->getResponse();
         $content =$response->getContent();
 
-		//Bug du test lors du renvoi de code 204 ==> envoi 200
+        //Bug du test lors du renvoi de code 204 ==> envoi 200
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertJson($content);
 
     }
 
-    public function testAnonymousDeleteMasters(){
+    public function testAnonymousDeleteCreditcards(){
         $client = static::createClient();
-        $client->request('DELETE','/api/masters/13');
+        $client->request('DELETE','/api/creditcards/13');
 
         $response = $client->getResponse();
         $content =$response->getContent();
@@ -343,4 +350,5 @@ class MastersControllerTest extends WebTestCase
         $this->assertJson($content);
 
     }
+
 }

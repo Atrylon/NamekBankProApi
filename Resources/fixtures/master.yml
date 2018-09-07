@@ -5,13 +5,20 @@ App\Entity\Master:
         email: admin@admin.com
         apiKey: '5b7fd37c2995a9.89857955'
         roles: [ROLE_ADMIN, ROLE_USER]
+        company: '@company_1'
     master_2:
         firstname: Test
         lastname: Test
         email: test@gmail.com
         company: '@company_2'
         apiKey: '5b7fd37c29d9f1.52897532'
-    master_{3..10}:
+    master_3:
+        firstname: Coco
+        lastname: Laricot
+        email: jooj@gmail.com
+        company: '@company_3'
+        apiKey: '5b7fd37c29d9f1.52475123'
+    master_{4..10}:
         firstname: <firstName()>
         lastname: <lastName()>
         email: <email()>

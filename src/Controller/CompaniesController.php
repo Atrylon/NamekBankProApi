@@ -178,7 +178,7 @@ class CompaniesController extends FOSRestController
 
                 $this->em->remove($company);
                 $this->em->flush();
-                return $this->view('Deleted!', 204);
+                return $this->view('Deleted!', 200);
             }
             return $this->view('Vous n\'avez pas les droits', 403);
         }
