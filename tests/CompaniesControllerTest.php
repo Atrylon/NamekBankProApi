@@ -320,12 +320,12 @@ class CompaniesControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request(
             'DELETE',
-            '/api/companies/2',
+            '/api/companies/4',
             [],
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'HTTP_AUTH-TOKEN' => '5b7fd37c29d9f1.52897532',
+                'HTTP_AUTH-TOKEN' => '5b7fd37c29d9f1.48751390',
             ]
         );
 

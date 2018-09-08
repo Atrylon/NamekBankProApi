@@ -240,10 +240,6 @@ class MastersControllerTest extends WebTestCase
     }
 
     public function testAdminPutMasters(){
-        $data = [
-            "firstname" => "Testu"
-        ];
-
         $client = static::createClient();
         $client->request(
             'PUT',
@@ -254,7 +250,7 @@ class MastersControllerTest extends WebTestCase
                 'CONTENT_TYPE' => 'application/json',
                 'HTTP_AUTH-TOKEN' => '5b7fd37c2995a9.89857955',
             ],
-            json_encode($data)
+            '{"firstname":"Testu"}'
         );
 
         $response = $client->getResponse();

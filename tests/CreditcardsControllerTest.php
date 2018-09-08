@@ -132,17 +132,90 @@ class CreditcardsControllerTest extends WebTestCase
 
     }
 
-    public function testAdminPostCreditcards(){
-        $data = [
-            "name" => "My creditcard 11",
-            "creditCardType"=> "Visa",
-            "creditCardNumber"=> "1111111111111111",
-            "company"=> [
-                "id"=>1,
-                "name"=> "Adams-Reichel"
+    public function testAdminGetCompaniesCreditcards(){
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/api/companies/1/creditcards',
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_AUTH-TOKEN' => '5b7fd37c2995a9.89857955',
             ]
-        ];
+        );
 
+        $response = $client->getResponse();
+        $content =$response->getContent();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertJson($content);
+
+        $arrayContent = json_decode($content, true);
+
+    }
+
+    public function testUserGetAnotherCompaniesCreditcards(){
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/api/companies/10/creditcards',
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_AUTH-TOKEN' => '5b7fd37c29d9f1.52897532',
+            ]
+        );
+
+        $response = $client->getResponse();
+        $content =$response->getContent();
+
+        $this->assertEquals(403, $response->getStatusCode());
+        $this->assertJson($content);
+
+        $arrayContent = json_decode($content, true);
+
+    }
+
+    public function testUserGetHisCompaniesCreditcards(){
+        $client = static::createClient();
+        $client->request(
+            'GET',
+            '/api/companies/2/creditcards',
+            [],
+            [],
+            [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_AUTH-TOKEN' => '5b7fd37c29d9f1.52897532',
+            ]
+        );
+
+        $response = $client->getResponse();
+        $content =$response->getContent();
+
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertJson($content);
+
+        $arrayContent = json_decode($content, true);
+
+    }
+
+    public function testAnonymousGetCompaniesCreditcards(){
+        $client = static::createClient();
+        $client->request('GET','/api/companies/8/creditcards');
+
+        $response = $client->getResponse();
+        $content =$response->getContent();
+
+        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertJson($content);
+
+        $arrayContent = json_decode($content, true);
+
+    }
+
+    public function testAdminPostCreditcards(){
         $client = static::createClient();
         $client->request(
             'POST',
@@ -151,9 +224,9 @@ class CreditcardsControllerTest extends WebTestCase
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'AUTH-TOKEN' => '5b7fd37c2995a9.89857955',
+                'HTTP_AUTH-TOKEN' => '5b7fd37c2995a9.89857955',
             ],
-            json_encode($data)
+            '{"name":"My creditcard 11","creditCardType":"Visa","creditCardNumber":"1111111111111111","company":{"id":1,"name":"Adams-Reichel"}}'
         );
 
         $response = $client->getResponse();
@@ -177,14 +250,14 @@ class CreditcardsControllerTest extends WebTestCase
         $client = static::createClient();
         $client->request(
             'POST',
-            '/api/creditcards',
+            '/api/creditcards.json',
             [],
             [],
             [
                 'CONTENT_TYPE' => 'application/json',
-                'AUTH-TOKEN' => '5b7fd37c29d9f1.52897532',
+                'HTTP_AUTH-TOKEN' => '5b7fd37c29d9f1.52897532',
             ],
-            json_encode($data)
+            '{"name":"My creditcard 12","creditCardType":"Visa Retired","creditCardNumber":"22222222222222","company":{"id":2,"name":"Put Company 1"}}'
         );
 
         $response = $client->getResponse();
@@ -219,7 +292,7 @@ class CreditcardsControllerTest extends WebTestCase
         $response = $client->getResponse();
         $content =$response->getContent();
 
-        $this->assertEquals(201, $response->getStatusCode());
+        $this->assertEquals(401, $response->getStatusCode());
         $this->assertJson($content);
 
         $client = static::createClient();
@@ -241,7 +314,7 @@ class CreditcardsControllerTest extends WebTestCase
         $this->assertJson($content);
 
         $arrayContent = json_decode($content, true);
-        $this->assertCount(13, $arrayContent);
+        $this->assertCount(12, $arrayContent);
     }
 
     public function testAdminPutCreditcards(){
@@ -315,13 +388,12 @@ class CreditcardsControllerTest extends WebTestCase
         $this->assertJson($content);
     }
 
-
     public function testUserDeleteHisCreditcards(){
         //Test to delete his company
         $client = static::createClient();
         $client->request(
             'DELETE',
-            '/api/creditcards/1',
+            '/api/creditcards/4',
             [],
             [],
             [

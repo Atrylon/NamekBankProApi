@@ -18,7 +18,13 @@ App\Entity\Master:
         email: jooj@gmail.com
         company: '@company_3'
         apiKey: '5b7fd37c29d9f1.52475123'
-    master_{4..10}:
+    master_4:
+        firstname: Doc
+        lastname: Martins
+        email: doc@idoc.com
+        company: '@company_4'
+        apiKey: '5b7fd37c29d9f1.48751390'
+    master_{5..10}:
         firstname: <firstName()>
         lastname: <lastName()>
         email: <email()>
