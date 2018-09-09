@@ -1,3 +1,5 @@
+[![Build
+Status](https://travis-ci.org/Atrylon/NamekBankProApi.svg?branch=master)](https://travis-ci.org/Atrylon/NamekBankProApi)
 #Namek Bank Pro API
 
 **Symfony course projet :**
