@@ -7,9 +7,9 @@ Status](https://travis-ci.org/Atrylon/NamekBankProApi.svg?branch=master)](https:
 
 A Symfony API for a bank to manage her users with their company and creditcards.
 
-##Getting Started
+## Getting Started
 
-###Installing
+### Installing
 
 First you will need a database :
 You can start with a clean database. For this, you have to create a 
@@ -25,13 +25,13 @@ The next thing to do is to launch the server : ``php bin/console server:run``
 
 You can now use function which are in the Controllers (get all, get one, post, put, delete, ...) !
 
-###Commands
+### Commands
 
 Two commands are available is this project:
 * You can create an admin while using ``php bin/console app:create-admin EMAIL FIRSTNAME LASTNAME``
 * You can count the number of creditcards with the following command : ``php bin/console app:user-count-creditcards``
 
-###Built With
+### Built With
 * [Symfony 4](https://symfony.com/4) - The Web framework used
 * [PHPUnit](https://phpunit.de/) - The PHP Testing Framework
 * [Alice Bundle](https://github.com/nelmio/alice) - A bundle to create fake data
@@ -39,5 +39,5 @@ Two commands are available is this project:
 * [PhpMyAdmin](https://www.phpmyadmin.net/) - The software for the Database
 * [Postman](https://www.getpostman.com/) - API Development Environment
 
-##Author
+## Author
 **Berenger Desgardin** - *Initial work* - [Atrylon](https://gihub.com/Atrylon)
